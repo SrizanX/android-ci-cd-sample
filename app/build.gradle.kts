@@ -20,13 +20,26 @@ android {
         }
     }
 
+    signingConfigs {
+        create("signingKey"){
+            storeFile = file("key_cicd_sample.jks")
+            storePassword = "123456"
+            keyAlias = "key0"
+            keyPassword = "123456"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("signingKey")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("signingKey")
         }
     }
     compileOptions {

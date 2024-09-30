@@ -1,6 +1,14 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+}
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
 }
 
 android {
@@ -21,11 +29,20 @@ android {
     }
 
     signingConfigs {
-        create("signingKey"){
+        create("signingKey") {
             storeFile = file("key_cicd_sample.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
-            keyAlias = System.getenv("KEY_ALIAS")
-            keyPassword = System.getenv("KEY_PASSWORD")
+
+            if (localPropertiesFile.exists()) {
+                // Use local.properties for local builds
+                storePassword = localProperties["KEYSTORE_PASSWORD"] as String
+                keyAlias = localProperties["KEY_ALIAS"] as String
+                keyPassword = localProperties["KEY_PASSWORD"] as String
+            } else {
+                // Use environment variables for CI/CD
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
         }
     }
 

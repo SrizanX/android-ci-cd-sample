@@ -23,9 +23,9 @@ android {
     signingConfigs {
         create("signingKey"){
             storeFile = file("key_cicd_sample.jks")
-            storePassword = "123456"
-            keyAlias = "key0"
-            keyPassword = "123456"
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
         }
     }
 

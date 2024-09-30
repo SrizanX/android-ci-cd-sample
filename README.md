@@ -1,0 +1,1 @@
+A project to explore and learn CI/CD for Android. It's a hands-on space for testing automated builds, testing, and deployment to streamline development.

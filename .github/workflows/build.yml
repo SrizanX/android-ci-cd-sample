@@ -17,6 +17,9 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Decode Keystore
+        run: echo "${{ secrets.KEYSTORE_FILE_BASE64 }}" | base64 --decode > app/key_cicd_sample.jks
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
@@ -26,6 +29,3 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-
-      - name: Decode Keystore
-        run: echo "${{ secrets.KEYSTORE_FILE_BASE64 }}" | base64 --decode > app/key_cicd_sample.jks

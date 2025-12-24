@@ -225,3 +225,39 @@ signingConfigs {
 In this setup, we first check whether the `local.properties` file exists. If it does, this indicates that the build is running in a local development environment, and the credentials are loaded from the file. If not, the build is assumed to be in a CI/CD environment, and the credentials are retrieved from environment variables.
 
 [Step 04. Source code](https://github.com/SrizanX/android-ci-cd-sample/tree/04_credentials_from_local_properties)
+
+
+
+
+
+## Step 05. Securely Manage the Keystore File
+In our previous steps, we have securely managed our signing credentials. However, the keystore file (`key_cicd_sample.jks`) is still part of our source code, which is not secure. To enhance security, we will remove the keystore file from our repository and instead retrieve it securely during the CI/CD build process.
+
+### How to encode the Keystore File
+To securely store the keystore file as a GitHub Secret, we need to encode it in base64 format. Run the following command in your bash terminal:
+```bash  
+cat key_cicd_sample.jks | base64 -w 0 > key_cicd_sample.jks.txt```  
+This command encodes the `key_cicd_sample.jks` file into base64 format and saves the output to `key_cicd_sample.jks.txt`. The `-w 0` option ensures that the output is a single line, which is suitable for storing as a GitHub Secret. 
+```
+
+
+### Storing the Keystore File as a GitHub Secret
+1. Open the keystore file (`key_cicd_sample.jks.txt`) in a text editor and copy its entire content.
+2. Navigate to your repository's **Settings**.
+3. In the left panel, select **Secrets and variables** > **Actions**.
+4. Click on the **New repository secret** button.
+5. Name the secret `KEYSTORE_FILE_BASE64` and paste the copied content of the keystore file into the **Secret** field.
+6. Click **Add secret** to save it.
+
+### Modifying the GitHub Actions Workflow
+Next, we will update our GitHub Actions workflow to create the keystore file during the build process using the secret we just created.  
+Add the following step **before the build step** in your `.github/workflows/build.yml` file:
+
+```yml  
+- name: Decode Keystore  
+  run: echo "${{ secrets.KEYSTORE_FILE_BASE64 }}" | base64 --decode > app/key_cicd_sample.jks
+```  
+### Explanation
+In this step, we create the keystore file by decoding the base64-encoded content stored in the `KEYSTORE_FILE_BASE64` secret. The `echo` command outputs the content, which is then piped to `base64 --decode` to reconstruct the original binary keystore file. The output is redirected to create the `key_cicd_sample.jks` file in the working directory.
+
+[Step 05. Source code](https://github.com/SrizanX/android-ci-cd-sample/tree/05_securely_manage_the_keystore_file)

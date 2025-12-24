@@ -26,3 +26,6 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Decode Keystore
+        run: echo "${{ secrets.KEYSTORE_FILE_BASE64 }}" | base64 --decode > app/key_cicd_sample.jks

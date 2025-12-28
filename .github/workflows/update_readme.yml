@@ -1,0 +1,39 @@
+name: Merge Readme into All Branches
+
+on:
+  push:
+    branches:
+      - readme
+
+permissions:
+  contents: write
+
+jobs:
+  merge-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout all branches
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          fetch-tags: true
+          ref: readme
+
+
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge readme into all branches
+        run: |
+          # List all remote branches except readme
+            branches=$(git for-each-ref --format='%(refname:short)' refs/remotes/origin/ | grep -v 'origin/readme$' | sed 's|origin/||')
+          
+          for branch in $branches; do
+          echo "Merging readme into $branch"
+          git checkout $branch
+          git merge origin/readme -m "Merge readme changes into $branch [skip ci]" || true
+          git push origin $branch
+          done

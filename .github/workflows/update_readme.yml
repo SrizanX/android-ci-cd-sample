@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - readme
+      -
+permissions:
+  contents: write
 
 jobs:
   merge-readme:

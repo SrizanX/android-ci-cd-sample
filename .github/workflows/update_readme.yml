@@ -3,7 +3,7 @@ name: Merge Readme into All Branches
 on:
   push:
     branches:
-      - readmetmp
+      - readme
 
 jobs:
   merge-readme:
@@ -15,7 +15,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
           fetch-tags: true
-          ref: readmetmp
+          ref: readme
 
 
       - name: Setup Git
@@ -25,9 +25,12 @@ jobs:
 
       - name: Merge readme into all branches
         run: |
-          # List all remote branches except readmetmp
+          # List all remote branches except readme
             branches=$(git for-each-ref --format='%(refname:short)' refs/remotes/origin/ | grep -v 'origin/readme$' | sed 's|origin/||')
           
           for branch in $branches; do
-          echo "Merging readmetmp into $branch"
+          echo "Merging readme into $branch"
+          git checkout $branch
+          git merge origin/readme -m "Merge readme changes into $branch [skip ci]" || true
+          git push origin $branch
           done

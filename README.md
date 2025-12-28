@@ -236,9 +236,9 @@ In our previous steps, we have securely managed our signing credentials. However
 ### How to encode the Keystore File
 To securely store the keystore file as a GitHub Secret, we need to encode it in base64 format. Run the following command in your bash terminal:
 ```bash  
-cat key_cicd_sample.jks | base64 -w 0 > key_cicd_sample.jks.txt```  
-This command encodes the `key_cicd_sample.jks` file into base64 format and saves the output to `key_cicd_sample.jks.txt`. The `-w 0` option ensures that the output is a single line, which is suitable for storing as a GitHub Secret. 
-```
+cat key_cicd_sample.jks | base64 -w 0 > key_cicd_sample.jks.txt
+```  
+This command encodes the `key_cicd_sample.jks` file into base64 format and saves the output to `key_cicd_sample.jks.txt`. The `-w 0` option ensures that the output is a single line, which is suitable for storing as a GitHub Secret.
 
 
 ### Storing the Keystore File as a GitHub Secret

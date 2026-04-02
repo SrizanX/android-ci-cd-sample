@@ -1,3 +1,4 @@
+import java.util.Base64
 import java.util.Properties
 
 plugins {
@@ -6,9 +7,28 @@ plugins {
 }
 
 val localProperties = Properties()
-val localPropertiesFile = rootProject.file("local.properties")
+val localPropertiesFile: File = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
     localPropertiesFile.inputStream().use { localProperties.load(it) }
+}
+
+fun createKeystoreFile(): File {
+    val keystoreBase64: String? = if (localPropertiesFile.exists()) {
+        localProperties["KEYSTORE_FILE_BASE64"] as String?
+    } else {
+        System.getenv("KEYSTORE_FILE_BASE64")
+    }
+
+    require(!keystoreBase64.isNullOrBlank()) { "Missing KEYSTORE_FILE_BASE64 (Base64 encoded JKS)" }
+
+    print("Decoding $keystoreBase64")
+
+    // Decode and write to a temporary file
+    val decodedBytes = Base64.getDecoder().decode(keystoreBase64)
+    return File.createTempFile("keystore", ".jks")
+        .apply {
+            writeBytes(decodedBytes)
+        }
 }
 
 android {
@@ -30,7 +50,7 @@ android {
 
     signingConfigs {
         create("signingKey") {
-            storeFile = file("key_cicd_sample.jks")
+            storeFile = createKeystoreFile()
 
             if (localPropertiesFile.exists()) {
                 // Use local.properties for local builds
